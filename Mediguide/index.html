@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Health</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+  perspective: 1200px;
+  position: relative;
+  padding-top: 90px;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(120,119,198,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255,119,198,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(78,205,196,0.15) 0%, transparent 50%);
+  z-index: -2;
+  animation: bgPulse 8s ease-in-out infinite;
+}
+
+@keyframes bgPulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* Animated Lines Background */
+.lines-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.1;
+}
+
+.line {
+  position: absolute;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  height: 1px;
+  animation: lineMove 20s linear infinite;
+}
+
+.line:nth-child(1) { top: 10%; width: 20%; left: -20%; animation-duration: 25s; }
+.line:nth-child(2) { top: 25%; width: 30%; left: -30%; animation-duration: 30s; animation-direction: reverse; }
+.line:nth-child(3) { top: 45%; width: 25%; left: -25%; animation-duration: 35s; }
+.line:nth-child(4) { top: 65%; width: 35%; left: -35%; animation-duration: 28s; animation-direction: reverse; }
+.line:nth-child(5) { top: 85%; width: 20%; left: -20%; animation-duration: 32s; }
+
+@keyframes lineMove {
+  0% { transform: translateX(0) rotate(0deg); }
+  100% { transform: translateX(calc(100vw + 100px)) rotate(0.5deg); }
+}
+
+.particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
+  border-radius: 50%;
+  animation: particleFloat 15s infinite linear;
+}
+
+.particle:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+.particle:nth-child(2) { top: 60%; left: 80%; animation-delay: 3s; }
+.particle:nth-child(3) { top: 80%; left: 20%; animation-delay: 6s; }
+.particle:nth-child(4) { top: 30%; left: 70%; animation-delay: 9s; }
+
+@keyframes particleFloat {
+  0% { transform: translateY(0px) translateX(0px) scale(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-100vh) translateX(100px) scale(1); opacity: 0; }
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 5%;
+  background: rgba(12, 12, 12, 0.9);
+  backdrop-filter: blur(30px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  transform-style: preserve-3d;
+  animation: slideDown 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100px) rotateX(90deg); opacity: 0; }
+  to { transform: translateY(0) rotateX(0); opacity: 1; }
+}
+
+.navbar h2 {
+  background: linear-gradient(45deg, #4ecdc4, #ff6b6b, #feca57);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -1px;
+  text-shadow: 0 0 30px rgba(78, 205, 196, 0.5);
+}
+
+.navbar > div:nth-child(2) {
+  display: flex;
+  gap: 2rem;
+}
+
+.navbar a {
+  color: rgba(255,255,255,0.9);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.8rem 1.5rem;
+  border-radius: 50px;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  transform-style: preserve-3d;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+}
+
+.navbar a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
+  border-radius: 50px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+  z-index: -1;
+}
+
+.navbar a:hover::before {
+  transform: scaleX(1);
+}
+
+.navbar a:hover {
+  color: white;
+  transform: translateY(-4px) rotateX(10deg) scale(1.05);
+  text-shadow: 0 5px 20px rgba(78,205,196,0.5);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+}
+
+.btn-green {
+  background: linear-gradient(45deg, #4ecdc4, #44a08d) !important;
+  padding: 1rem 2rem !important;
+  border-radius: 50px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 10px 40px rgba(78,205,196,0.4);
+  border: none !important;
+}
+
+.btn-green:hover {
+  box-shadow: 0 20px 60px rgba(78,205,196,0.6);
+  transform: translateY(-6px) rotateX(15deg) scale(1.08) !important;
+}
+
+.nav-right {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-right a {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.8rem 1.8rem;
+  border-radius: 50px;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.hero {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  padding: 0 5%;
+  position: relative;
+  transform-style: preserve-3d;
+}
+
+.hero > div {
+  transform: translateZ(80px);
+  animation: heroFloat 7s ease-in-out infinite;
+}
+
+@keyframes heroFloat {
+  0%, 100% { transform: translateZ(80px) translateY(0px) rotateX(0deg) rotateY(0deg); }
+  33% { transform: translateZ(80px) translateY(-15px) rotateX(3deg) rotateY(-2deg); }
+  66% { transform: translateZ(80px) translateY(-25px) rotateX(5deg) rotateY(2deg); }
+}
+
+.hero h1 {
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  margin-bottom: 1.5rem;
+  line-height: 1.1;
+  font-weight: 900;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 50%, #e0e0e0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 
+    0 0 30px rgba(255,255,255,0.3),
+    0 20px 40px rgba(0,0,0,0.3);
+  position: relative;
+}
+
+.hero h1::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #4ecdc4, #ff6b6b, transparent);
+  border-radius: 2px;
+  animation: lineGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes lineGlow {
+  from { box-shadow: 0 0 10px #4ecdc4; width: 100px; }
+  to { box-shadow: 0 0 20px #ff6b6b; width: 150px; }
+}
+
+.hero h1 span {
+  background: linear-gradient(135deg, #4ecdc4 0%, #ff6b6b 50%, #feca57 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: block;
+}
+
+.hero p {
+  font-size: 1.4rem;
+  margin-bottom: 3rem;
+  opacity: 0.95;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  text-shadow: 0 5px 20px rgba(0,0,0,0.5);
+  font-weight: 300;
+  letter-spacing: 0.5px;
+}
+
+.btn, .btn-outline {
+  padding: 1.2rem 3rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 60px;
+  cursor: pointer;
+  margin: 0 1rem;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+.btn {
+  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 50%, #2d8b79 100%);
+  color: white;
+  box-shadow: 
+    0 15px 40px rgba(78,205,196,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.6s;
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+.btn-outline {
+  background: rgba(255,0,0);
+  color: white;
+  border: 2px solid rgba(255,255,255,0.2);
+  backdrop-filter: blur(20px);
+   box-shadow: 
+    0 15px 40px rgba(78,205,196,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+  
+}
+
+.btn:hover, .btn-outline:hover {
+  transform: translateY(-12px) translateZ(30px) rotateX(20deg) scale(1.08);
+  box-shadow: 
+    0 30px 80px rgba(78,205,196,0.6),
+    0 0 40px rgba(78,205,196,0.3);
+}
+
+.btn-outline:hover {
+  border-color: rgba(78,205,196,0.6);
+  background: rgba(78,205,196,0.1);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 3rem;
+  padding: 10rem 5% 8rem;
+  max-width: 1600px;
+  margin: 0 auto;
+  perspective: 1200px;
+  position: relative;
+}
+
+.cards::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #4ecdc4, #ff6b6b, transparent);
+  border-radius: 2px;
+  animation: lineGlow 3s ease-in-out infinite alternate;
+  z-index: 10;
+}
+
+.card {
+  display: block;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(30px);
+  border-radius: 30px;
+  padding: 3rem 2.5rem;
+  text-decoration: none;
+  color: white;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+  position: relative;
+  height: 240px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(78,205,196,0.1), rgba(255,107,107,0.1));
+  border-radius: 30px;
+  opacity: 0;
+  transition: all 0.4s ease;
+  z-index: 0;
+  transform: scale(0.8) rotateX(20deg);
+}
+
+.card:hover::before {
+  opacity: 1;
+  transform: scale(1) rotateX(0deg);
+}
+
+.card-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  position: relative;
+  filter: drop-shadow(0 10px 30px rgba(78,205,196,0.3));
+}
+
+.icon-heart {
+  width: 100%;
+  height: 100%;
+  background: 
+    conic-gradient(from 0deg, #4ecdc4, #ff6b6b, #feca57, #4ecdc4);
+  border-radius: 50%;
+  position: relative;
+  animation: iconSpin 3s linear infinite;
+}
+
+.icon-heart::before,
+.icon-heart::after {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 70px;
+  background: #4ecdc4;
+  border-radius: 50px 50px 50px 50px;
+  transform: rotate(-45deg);
+  left: 20px;
+  animation: heartBeat 2s ease-in-out infinite;
+}
+
+.icon-heart::after {
+  transform: rotate(45deg);
+  animation-delay: 0.5s;
+  background: linear-gradient(45deg, #ff6b6b, #feca57);
+}
+
+@keyframes heartBeat {
+  0%, 100% { transform: rotate(-45deg) scale(1); }
+  50% { transform: rotate(-45deg) scale(1.1); }
+}
+
+@keyframes iconSpin {
+  to { transform: rotate(360deg); }
+}
+
+.card:nth-child(1) .icon-heart { background: conic-gradient(from 0deg, #4ecdc4, #44a08d, #2d8b79, #4ecdc4); }
+.card:nth-child(2) .icon-heart { background: conic-gradient(from 0deg, #ff6b6b, #ff8e8e, #ff5252, #ff6b6b); }
+.card:nth-child(3) .icon-heart { background: conic-gradient(from 0deg, #feca57, #ffd32a, #ffeb3b, #feca57); }
+.card:nth-child(4) .icon-heart { background: conic-gradient(from 0deg, #ba68c8, #9c27b0, #7b1fa2, #ba68c8); }
+
+.card h3 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff, #f0f0f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+.card p {
+  opacity: 0.8;
+  font-size: 1.1rem;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.card:hover {
+  transform: translateY(-20px) translateZ(50px) rotateX(15deg) rotateY(5deg);
+  box-shadow: 0 30px 80px rgba(78,205,196,0.4);
+}
+
+</style>
+</head>
+<body>
+<div class="lines-bg">
+  <div class="line"></div>
+  <div class="line"></div>
+  <div class="line"></div>
+  <div class="line"></div>
+  <div class="line"></div>
+</div>
+
+<div class="particles">
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+  <div class="particle"></div>
+</div>
+
+<nav class="navbar">
+  <h2>MediGuide</h2>
+  <div>
+    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+    <a href="features.html"><i class="fas fa-layer-group"></i> Features</a>
+    <a href="about.html"><i class="fas fa-info-circle"></i> About</a> 
+ </div>
+  <div class="nav-right">
+    <a href="login2.html"><i class="fas fa-sign-in-alt"></i> Login</a>
+    <a href="signup2.html"  class="btn-green"><i class="fas fa-user-plus"></i> Sign Up</a>
+
+  </div>
+</nav>
+
+<section class="hero">
+  <div>
+    <h1>Your Health, <span>Simplified</span></h1>
+    <p>Monitor your vital signs with real-time AI-powered insights and personalized health recommendations.</p>
+    <button class="btn">Check Symptoms</button>
+    <button class="btn-outline">Emergency</button>
+  </div>
+</section>
+
+<section class="cards">
+  <a href="symptom checker 2.html" class="card">
+    <div class="card-icon">
+      <div class="icon-heart"></div>
+    </div>
+    <h3>Symptom Checker</h3>
+    <p>Check symptoms with AI and get possible diagnoses</p>
+  </a>
+  <a href="Hospital.html" class="card">
+    <div class="card-icon">
+      <div class="icon-heart"></div>
+    </div>
+    <h3>Find Hospitals</h3>
+    <p>Locate and get information about hospitals near you</p>
+  </a>
+  <a href="doctor.html" class="card">
+    <div class="card-icon">
+      <div class="icon-heart"></div>
+    </div>
+    <h3>Doctor Directory</h3>
+    <p>Find and connect with healthcare professionals in your area</p>
+  </a>
+  <a href="chat.html" class="card">
+    <div class="card-icon">
+      <div class="icon-heart"></div>
+    </div>
+    <h3>AI chatbot</h3>
+    <p>Get instant health information and support</p>
+  </a>
+</section>
+
+</body>
+</html>
