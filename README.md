@@ -1,4 +1,4 @@
-### Mediguide:Smart Healthcare System
+# Mediguide:Smart Healthcare System
 
 A web-based application designed to provide basic healthcare assistance using AI, location services, and structured medical data. This system helps users check symptoms, find nearby hospitals, and access essential health information.
 
@@ -6,62 +6,62 @@ A web-based application designed to provide basic healthcare assistance using AI
 
 ##  Features
 
-# User Interface
+## User Interface
 
 * Clean and responsive design
 * Easy symptom input
 * Smooth navigation
 
-# AI-Based Health Bot
+## AI-Based Health Bot
 
 * Symptom checker
 * Basic disease prediction (rule-based)
 * First-aid suggestions
 * Health tips and precautions
 
-# Location-Based Hospital Finder
+## Location-Based Hospital Finder
 
 * Detects user location (GPS/manual)
 * Shows nearest hospitals and doctors
 * Filters by distance, specialization, emergency services
 
-#  Disease Information System
+##  Disease Information System
 
 * Common diseases and symptoms
 * Prevention tips
 * Guidance on when to consult a doctor
 
-# Doctor & Hospital Directory
+## Doctor & Hospital Directory
 
 * Hospital details (name, address, departments)
 * Doctor specialization
 * Availability status
 
-#  Appointment Suggestion
+##  Appointment Suggestion
 
 * Suggests doctors based on symptoms
 * Displays nearest hospitals
 * Provides contact details
 
-#  User Health Profile
+##  User Health Profile
 
 * Stores user data
 * Saves symptom history
 * Tracks chatbot interactions
 
-#  Emergency Support
+##  Emergency Support
 
 * 24×7 hospital list
 * Quick call option
 * GPS navigation
 
-#  Admin Panel
+##  Admin Panel
 
 * Manage hospitals and doctors
 * Update disease data
 * Manage health tips
 
-#  Security
+##  Security
 
 * Secure login system
 * Role-based access control
@@ -71,7 +71,7 @@ A web-based application designed to provide basic healthcare assistance using AI
 
 ##  Tech Stack
 
-#  Frontend
+##  Frontend
 
 * HTML5
 * CSS3
@@ -79,16 +79,16 @@ A web-based application designed to provide basic healthcare assistance using AI
 * Three.js
 * Bootstrap / Tailwind CSS
 
-# Backend
+## Backend
 
 * Python (Flask / FastAPI)
 
-# AI Layer
+## AI Layer
 
 * Rule-based chatbot
 * Optional ML integration
 
-# Database
+## Database
 
 * SQL Server
 
@@ -96,11 +96,11 @@ A web-based application designed to provide basic healthcare assistance using AI
 
 * REST APIs (JSON format)
 
-# Maps & Location
+## Maps & Location
 
 * Google Maps API / OpenStreetMap
 
-# Authentication
+## Authentication
 
 * JWT (JSON Web Token)
 
@@ -127,7 +127,7 @@ Smart-Healthcare-System/
 ```
 
 
-## 🎯 Future Enhancements
+##  Future Enhancements
 
 * Medicine reminder
 * Water intake tracker
