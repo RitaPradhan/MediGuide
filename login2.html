@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Health - Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* Animated Background Elements */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 80%, rgba(78, 205, 196, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(254, 202, 87, 0.2) 0%, transparent 50%);
+            animation: bgPulse 8s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        .lines-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(90deg, transparent 98%, rgba(78, 205, 196, 0.1) 100%),
+                linear-gradient(0deg, transparent 98%, rgba(255, 107, 107, 0.1) 100%);
+            background-size: 50px 100%, 100% 50px;
+            animation: lineMove 25s linear infinite;
+            z-index: 1;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particles::before,
+        .particles::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
+            border-radius: 50%;
+            animation: particleFloat 15s linear infinite;
+        }
+
+        .particles::before {
+            top: 20%;
+            left: 10%;
+            animation-delay: -5s;
+        }
+
+        .particles::after {
+            top: 80%;
+            right: 20%;
+            animation-delay: -10s;
+        }
+
+        /* MODERN SLIM NAVBAR - 60-70px height */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 70px;
+            padding: 0 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            background: rgba(12, 12, 12, 0.9);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #4ecdc4, #ff6b6b, #feca57);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            margin: 0 3rem;
+        }
+
+        .nav-links a {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 0.5rem 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #4ecdc4, #ff6b6b);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: white;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-login {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            padding: 0.5rem 1.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-login:hover {
+            color: white;
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-signup {
+            padding: 0.6rem 1.5rem;
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+        }
+
+        .btn-signup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
+        }
+
+        /* Main Content */
+        .main-content {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            padding-top: 90px; /* Account for navbar height */
+            position: relative;
+            z-index: 10;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 3rem;
+            padding: 4rem;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            transform-style: preserve-3d;
+            animation: heroFloat 7s ease-in-out infinite;
+        }
+
+        .app-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 2rem;
+            background: conic-gradient(from 0deg, #4ecdc4, #44a08d, #2d8b79, #4ecdc4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            animation: heartBeat 2s ease-in-out infinite;
+            box-shadow: 0 0 30px rgba(78, 205, 196, 0.4);
+        }
+
+        .welcome-text h1 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 900;
+            font-size: clamp(2.5rem, 6vw, 3.5rem);
+            background: linear-gradient(135deg, #ffffff, #e0e0e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .welcome-text h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, #4ecdc4, #ff6b6b);
+            border-radius: 2px;
+            animation: lineGlow 2s ease-in-out infinite;
+        }
+
+        .welcome-text p {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1.5rem 1rem 1.5rem 3.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1.5rem;
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            box-shadow: 0 0 30px rgba(78, 205, 196, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .form-icon {
+            position: absolute;
+            left: 1.2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #4ecdc4, #44a08d, #2d8b79);
+            color: white;
+            border: none;
+            border-radius: 2rem;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(78, 205, 196, 0.4);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-12px) rotateX(20deg) scale(1.08);
+            box-shadow: 0 20px 50px rgba(78, 205, 196, 0.6);
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+        }
+
+        .signup-link a {
+            color: #ff6b6b;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .signup-link a:hover {
+            color: #ff8e8e;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+        }
+
+        /* Animations */
+        @keyframes bgPulse {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        @keyframes lineMove {
+            0% { transform: translateX(-100%) translateY(-100%); }
+            100% { transform: translateX(100%) translateY(100%); }
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes heroFloat {
+            0%, 100% { transform: translateY(0px) rotateX(0deg); }
+            50% { transform: translateY(-20px) rotateX(2deg); }
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            14% { transform: scale(1.3); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.3); }
+            70% { transform: scale(1); }
+        }
+
+        @keyframes lineGlow {
+            0%, 100% { box-shadow: 0 0 10px #4ecdc4; }
+            50% { box-shadow: 0 0 20px #4ecdc4, 0 0 30px #ff6b6b; }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .nav-container {
+                padding: 0 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0 1.5rem;
+                height: 65px;
+            }
+            
+            .auth-buttons {
+                gap: 0.75rem;
+            }
+            
+            .main-content {
+                padding: 2rem 1rem;
+                padding-top: 85px;
+            }
+
+            .login-container {
+                margin: 1rem;
+                padding: 3rem 2rem;
+                border-radius: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                padding: 0 1rem;
+            }
+            
+            .login-container {
+                padding: 2.5rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="lines-bg"></div>
+    <div class="particles"></div>
+
+    <!-- MODERN SLIM NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">MediGuide</a>
+            
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+            
+            <div class="auth-buttons">
+                <a href="login2.html" class="btn-login">Login</a>
+                <button class="btn-signup">Sign Up</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Login Content -->
+    <div class="main-content">
+        <div class="login-container">
+            <div class="app-icon">❤️</div>
+            <div class="welcome-text">
+                <h1>Welcome back</h1>
+                <p>Enter your details to access your account</p>
+            </div>
+            
+            <form>
+                <div class="form-group">
+                    <span class="form-icon">📧</span>
+                    <input type="email" placeholder="Email address" required>
+                </div>
+                <div class="form-group">
+                    <span class="form-icon">🔒</span>
+                    <input type="password" placeholder="Password" required>
+                </div>
+                <button type="submit" class="btn">Sign in →</button>
+            </form>
+            
+            <div class="signup-link">
+                Don't have an account? <a href="signup2.html">Sign up</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediGuide - AI Health Assistant</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #4ecdc4 0%, #44a08d 50%, #2d8b79 100%);
+            --accent-gradient: linear-gradient(135deg, #ff6b6b 0%, #ff8e8e 100%);
+            --gold-gradient: linear-gradient(135deg, #feca57 0%, #ffd93d 100%);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-primary: rgba(255, 255, 255, 0.95);
+            --text-secondary: rgba(255, 255, 255, 0.7);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 50%, #16213e 100%);
+            position: relative;
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            padding: 2rem 0;
+            padding-top: 90px;
+        }
+
+        /* Background Effects */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(78, 205, 196, 0.25) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.25) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(254, 202, 87, 0.15) 0%, transparent 50%);
+            animation: bgPulse 8s ease-in-out infinite;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                repeating-linear-gradient(45deg, transparent 0, transparent 2px, rgba(78, 205, 196, 0.02) 2px, rgba(78, 205, 196, 0.02) 4px),
+                repeating-linear-gradient(-45deg, transparent 0, transparent 2px, rgba(255, 107, 107, 0.02) 2px, rgba(255, 107, 107, 0.02) 4px);
+            animation: lineMove 30s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 0.7; transform: scale(1) rotate(0deg); }
+            33% { opacity: 1; transform: scale(1.05) rotate(1deg); }
+            66% { opacity: 0.8; transform: scale(1.02) rotate(-1deg); }
+        }
+
+        @keyframes lineMove {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(50%, 50%) rotate(360deg); }
+        }
+
+        /* Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            animation: particleFloat 15s ease-in-out infinite;
+        }
+
+        .particle.primary { background: radial-gradient(circle, rgba(78, 205, 196, 0.8), transparent); }
+        .particle.accent { background: radial-gradient(circle, rgba(255, 107, 107, 0.6), transparent); }
+        .particle.gold { background: radial-gradient(circle, rgba(254, 202, 87, 0.7), transparent); }
+
+        .particle:nth-child(1) { width: 8px; height: 8px; top: 15%; left: 10%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 6px; height: 6px; top: 65%; left: 85%; animation-delay: 2s; }
+        .particle:nth-child(3) { width: 10px; height: 10px; top: 75%; left: 25%; animation-delay: 5s; }
+        .particle:nth-child(4) { width: 7px; height: 7px; top: 35%; left: 75%; animation-delay: 8s; }
+        .particle:nth-child(5) { width: 9px; height: 9px; top: 20%; left: 55%; animation-delay: 11s; }
+        .particle:nth-child(6) { width: 5px; height: 5px; top: 85%; left: 15%; animation-delay: 4s; }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translateY(0) translateX(0) rotate(0deg) scale(1); opacity: 0.6; }
+            25% { transform: translateY(-15px) translateX(10px) rotate(90deg) scale(1.2); opacity: 1; }
+            50% { transform: translateY(-25px) translateX(-5px) rotate(180deg) scale(0.9); opacity: 0.8; }
+            75% { transform: translateY(-10px) translateX(15px) rotate(270deg) scale(1.1); opacity: 0.9; }
+        }
+
+        /* Navbar */
+        .navbar {
+            position: sticky;
+            top: 0;
+            width: 100%;
+            padding: 1.2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(40px);
+            background: var(--glass-bg);
+            border-bottom: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            font-weight: 900;
+            font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2.5rem;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.05rem;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .nav-links a:hover {
+            color: #4ecdc4;
+            transform: translateY(-3px);
+        }
+
+        /* Container for centered content */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Section Styles - Independent Glass Cards */
+        .section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(40px);
+            border-radius: 28px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+            margin-bottom: 2.5rem;
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            animation: sectionFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes sectionFloat {
+            0%, 100% { transform: translateY(0) rotateX(0deg); }
+            50% { transform: translateY(-8px) rotateX(2deg); }
+        }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 3rem 2.5rem;
+            text-align: center;
+            animation-delay: 0s;
+        }
+
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .hero-main {
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .ai-avatar {
+            width: 100px;
+            height: 100px;
+            background: var(--primary-gradient);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            box-shadow: 0 25px 50px rgba(78, 205, 196, 0.4);
+            position: relative;
+            animation: heartBeat 2.5s ease-in-out infinite;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+
+        .ai-avatar::before {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            background: conic-gradient(from 0deg, #4ecdc4, #44a08d, #4ecdc4, #44a08d);
+            border-radius: 50%;
+            animation: spin 3s linear infinite;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            15% { transform: scale(1.08); }
+            30% { transform: scale(1); }
+        }
+
+        .header-content h1 {
+            font-weight: 900;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+
+        .status-dot {
+            width: 14px;
+            height: 14px;
+            background: #4ecdc4;
+            border-radius: 50%;
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(78, 205, 196, 0.7); }
+            70% { box-shadow: 0 0 0 12px rgba(78, 205, 196, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(78, 205, 196, 0); }
+        }
+
+        /* Chat Section */
+        .chat-section {
+            padding: 2.5rem;
+            max-height: 60vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            animation-delay: 0.2s;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(78, 205, 196, 0.3) var(--glass-bg);
+        }
+
+        .chat-section::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-section::-webkit-scrollbar-track {
+            background: var(--glass-bg);
+            border-radius: 4px;
+        }
+
+        .chat-section::-webkit-scrollbar-thumb {
+            background: rgba(78, 205, 196, 0.4);
+            border-radius: 4px;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: none;
+            padding: 1.5rem;
+            background: rgba(78, 205, 196, 0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(78, 205, 196, 0.3);
+            margin-bottom: 1rem;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #4ecdc4;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        /* Messages */
+        .message {
+            display: flex;
+            gap: 1.25rem;
+            animation: slideInMessage 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 100%;
+        }
+
+        @keyframes slideInMessage {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .message.ai { justify-content: flex-start; }
+        .message.user { justify-content: flex-end; }
+
+        .message-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .message.ai .message-avatar {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 8px 20px rgba(78, 205, 196, 0.3);
+        }
+
+        .message.user .message-avatar {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .message-bubble {
+            max-width: 75%;
+            padding: 1.5rem 2rem;
+            border-radius: 24px;
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            position: relative;
+        }
+
+        .message.ai .message-bubble {
+            background: rgba(78, 205, 196, 0.12);
+            border-color: rgba(78, 205, 196, 0.25);
+            color: var(--text-primary);
+        }
+
+        .message.user .message-bubble {
+            background: var(--accent-gradient);
+            border-color: rgba(255, 107, 107, 0.3);
+            color: white;
+            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.3);
+        }
+
+        .message-content {
+            font-weight: 500;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+
+        .message-time {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Input Section */
+        .input-section {
+            padding: 2rem 2.5rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-end;
+            animation-delay: 0.4s;
+        }
+
+        .message-input {
+            flex: 1;
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            font-size: 1.05rem;
+            font-weight: 400;
+            outline: none;
+            resize: none;
+            max-height: 120px;
+            line-height: 1.6;
+            padding: 1rem;
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+        }
+
+        .message-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .btn-send {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 15px 40px rgba(78, 205, 196, 0.4);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            flex-shrink: 0;
+        }
+
+        .btn-send:hover {
+            transform: translateY(-8px) scale(1.1);
+            box-shadow: 0 25px 60px rgba(78, 205, 196, 0.6);
+        }
+
+        /* Quick Actions Section */
+        .quick-actions-section {
+            padding: 2rem 2.5rem;
+            animation-delay: 0.6s;
+        }
+
+                .quick-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .quick-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            color: var(--text-secondary);
+            padding: 0.75rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(20px);
+        }
+
+        .quick-btn:hover {
+            background: rgba(78, 205, 196, 0.15);
+            border-color: #4ecdc4;
+            color: #4ecdc4;
+            transform: translateY(-3px);
+        }
+
+        /* Emergency Section */
+        .emergency-section {
+            padding: 2rem 2.5rem;
+            text-align: center;
+            animation-delay: 0.8s;
+        }
+
+        .btn-emergency {
+            width: 100%;
+            padding: 1.25rem 2rem;
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 20px 50px rgba(255, 107, 107, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-emergency:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 30px 70px rgba(255, 107, 107, 0.6);
+        }
+
+        /* Disclaimer Section */
+        .disclaimer-section {
+            padding: 2.5rem;
+            text-align: center;
+            animation-delay: 1s;
+        }
+
+        .disclaimer-content {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 400;
+            line-height: 1.7;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .disclaimer-content strong {
+            color: var(--text-primary);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 0 1.5rem;
+            }
+            
+            .hero-main {
+                gap: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem 0;
+            }
+
+            .navbar {
+                padding: 1rem 1.5rem;
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .nav-links {
+                gap: 1.5rem;
+            }
+
+            .section {
+                margin-bottom: 2rem;
+                border-radius: 20px;
+            }
+
+            .hero-section {
+                padding: 2rem 1.5rem;
+            }
+
+            .hero-main {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .ai-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 2.5rem;
+            }
+
+            .chat-section {
+                padding: 1.5rem;
+                max-height: 50vh;
+            }
+
+            .input-section,
+            .quick-actions-section,
+            .emergency-section,
+            .disclaimer-section {
+                padding: 1.5rem;
+            }
+
+            .quick-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .quick-btn {
+                width: 100%;
+                max-width: 300px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .chat-section {
+                padding: 1rem;
+            }
+
+            .message-bubble {
+                max-width: 90%;
+                padding: 1.25rem 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particles -->
+    <div class="particles">
+        <div class="particle primary"></div>
+        <div class="particle accent"></div>
+        <div class="particle gold"></div>
+        <div class="particle primary"></div>
+        <div class="particle accent"></div>
+        <div class="particle gold"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">MediGuide</div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="#">Features</a></li>
+            <li><a href="#">About</a></li>
+        </ul>
+        <div style="display: flex; gap: 1rem;">
+            <button class="btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; background: var(--primary-gradient); color: white; border-radius: 20px; border: none; backdrop-filter: blur(20px);">Login</button>
+            <button class="btn" style="padding: 0.75rem 1.5rem; font-size: 0.9rem; background: var(--accent-gradient); color: white; border-radius: 20px; border: none; backdrop-filter: blur(20px);">Sign Up</button>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="section hero-section">
+            <div class="hero-content">
+                <div class="hero-main">
+                    <div class="ai-avatar">🤖</div>
+                    <div class="header-content">
+                        <h1>Health Assistant</h1>
+                        <div class="status">
+                            <div class="status-dot"></div>
+                            Online • Response time: <span style="color: #4ecdc4;">~2s</span>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn" onclick="newChat()" style="padding: 1rem 2.5rem; background: var(--primary-gradient); color: white; border: none; border-radius: 25px; font-weight: 600; cursor: pointer;">
+                    <i class="fas fa-plus"></i> New Chat
+                </button>
+            </div>
+        </section>
+
+        <!-- Chat Section -->
+        <section class="section chat-section" id="chatArea">
+            <div class="message ai">
+                <div class="message-avatar">🤖</div>
+                <div class="message-bubble">
+                    <div class="message-content">
+                        <strong>Hi there! 👋</strong> I'm your AI Health Assistant powered by advanced medical knowledge. 
+                        I can help analyze symptoms, provide health insights, and guide you on next steps. 
+                        <em>What health concern can I assist you with today?</em>
+                    </div>
+                    <div class="message-time">
+                        <i class="fas fa-clock"></i> <span id="welcomeTime"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typingIndicator">
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="message-avatar" style="background: var(--primary-gradient);">🤖</div>
+                <div>
+                    <strong>Health Assistant</strong> is typing...
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Section -->
+        <section class="section input-section">
+            <textarea class="message-input" id="messageInput" 
+                      placeholder="Describe your symptoms, ask about medications, or get health advice... (Press Enter to send)" 
+                      rows="1"></textarea>
+            <button class="btn-send" id="sendBtn" onclick="sendMessage()">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </section>
+
+        <!-- Quick Actions Section -->
+        <section class="section quick-actions-section">
+            <div class="quick-actions">
+                <button class="quick-btn" onclick="quickMessage('I have a headache and fever')">Headache & Fever</button>
+                <button class="quick-btn" onclick="quickMessage('Stomach pain and nausea')">Stomach Issues</button>
+                <button class="quick-btn" onclick="quickMessage('I feel tired all the time')">Fatigue</button>
+                <button class="quick-btn" onclick="quickMessage('What are healthy eating tips?')">Nutrition</button>
+            </div>
+        </section>
+
+        <!-- Emergency Section -->
+        <section class="section emergency-section">
+            <button class="btn-emergency" onclick="emergencyCall()">
+                <i class="fas fa-exclamation-triangle"></i>
+                🚨 EMERGENCY? Call 911 Immediately
+            </button>
+        </section>
+
+        <!-- Disclaimer Section -->
+        <section class="section disclaimer-section">
+            <div class="disclaimer-content">
+                <i class="fas fa-info-circle" style="color: #4ecdc4; font-size: 1.2rem; margin-bottom: 1rem; display: block;"></i>
+                <strong>Medical Disclaimer:</strong> This AI provides general health information only and is <strong>NOT</strong> a substitute for professional medical advice, diagnosis, or treatment. 
+                Always seek the advice of your physician or qualified healthcare provider with any questions regarding medical conditions. In emergencies, call 911 immediately.
+            </div>
+        </section>
+    </div>
+
+    <script>
+        class HealthAIChat {
+            constructor() {
+                this.chatArea = document.getElementById('chatArea');
+                this.messageInput = document.getElementById('messageInput');
+                this.sendBtn = document.getElementById('sendBtn');
+                this.typingIndicator = document.getElementById('typingIndicator');
+                this.messageCount = 0;
+                this.isTyping = false;
+
+                // Set welcome time
+                document.getElementById('welcomeTime').textContent = this.getCurrentTime();
+
+                this.init();
+            }
+
+            init() {
+                this.messageInput.addEventListener('input', this.autoResize.bind(this));
+                this.messageInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+            }
+
+            autoResize() {
+                this.messageInput.style.height = 'auto';
+                this.messageInput.style.height = Math.min(this.messageInput.scrollHeight, 120) + 'px';
+            }
+
+            showTypingIndicator(show = true) {
+                this.isTyping = show;
+                this.typingIndicator.style.display = show ? 'block' : 'none';
+                if (show) {
+                    this.chatArea.scrollTop = this.chatArea.scrollHeight;
+                }
+            }
+
+            addMessage(content, isUser = false, avatar = isUser ? '👤' : '🤖') {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isUser ? 'user' : 'ai'}`;
+                messageDiv.innerHTML = `
+                    ${isUser ? '' : `<div class="message-avatar">${avatar}</div>`}
+                    <div class="message-bubble">
+                        <div class="message-content">${this.parseContent(content)}</div>
+                        <div class="message-time">
+                            <i class="fas fa-clock"></i> ${this.getCurrentTime()}
+                        </div>
+                    </div>
+                    ${isUser ? `<div class="message-avatar">${avatar}</div>` : ''}
+                `;
+                this.chatArea.appendChild(messageDiv);
+                this.chatArea.scrollTop = this.chatArea.scrollHeight;
+            }
+
+            parseContent(content) {
+                return content
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/`(.*?)`/g, '<code style="background: rgba(255,255,255,0.1); padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.9em; color: #4ecdc4;">$1</code>');
+            }
+
+            getCurrentTime() {
+                return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+
+            async sendMessage() {
+                const message = this.messageInput.value.trim();
+                if (!message || this.isTyping) return;
+
+                this.messageInput.value = '';
+                this.addMessage(message, true, '👤');
+                this.autoResize();
+
+                this.showTypingIndicator(true);
+
+                const responseTime = 1200 + Math.random() * 1800;
+                setTimeout(() => {
+                    this.showTypingIndicator(false);
+                    const response = this.generateSmartResponse(message);
+                    this.addMessage(response);
+                }, responseTime);
+            }
+
+            generateSmartResponse(message) {
+                this.messageCount++;
+                const lowerMessage = message.toLowerCase();
+
+                if (lowerMessage.includes('headache') || lowerMessage.includes('head ache')) {
+                    return `**Headache Analysis:**\n\nHeadaches can stem from various causes:\n• *Tension*: Stress, poor posture\n• *Migraine*: Throbbing pain, light sensitivity\n• *Dehydration*: Dull ache, thirst\n\n**Recommendations:**\n• Hydrate well (2-3L water/day)\n• Rest in dark, quiet room\n• OTC pain relief (ibuprofen 400mg)\n• Track duration & triggers\n\n**Seek immediate care if:** sudden/severe pain, vision changes, confusion, neck stiffness.`;
+                }
+
+                if (lowerMessage.includes('fever')) {
+                    return `**Fever Protocol:**\n\n**Normal response:** Body fighting infection\n\n**Monitor:**\n• Temp > 100.4°F (38°C)\n• Duration > 3 days\n• Age < 3 months\n\n**Actions:**\n• Stay hydrated\n• Lukewarm sponge bath\n• Acetaminophen/ibuprofen (age-appropriate dose)\n• Light clothing\n\n**Urgent:** >103°F (39.4°C), stiff neck, rash, breathing difficulty.`;
+                }
+
+                if (lowerMessage.includes('stomach') || lowerMessage.includes('nausea') || lowerMessage.includes('pain')) {
+                    return `**Stomach Pain Analysis:**\n\nCommon causes:\n• *Indigestion*: Discomfort after eating\n• *Gas*: Bloating, cramping\n• *Constipation*: Difficulty passing stool\n• *Gastritis*: Burning pain\n\n**Recommendations:**\n• Avoid spicy, fatty foods\n• Stay hydrated\n• Gentle abdominal massage (clockwise)\n• OTC antacids (Tums, Maalox)\n\n**Seek immediate care if:** severe pain, persistent vomiting, blood in stool/vomit, fever.`;
+                }
+
+                if (lowerMessage.includes('tired') || lowerMessage.includes('fatigue')) {
+                    return `**Fatigue Analysis:**\n\nCommon causes:\n• *Sleep deficiency*: <7hrs/night\n• *Dehydration*: Dark urine\n• *Nutrient deficiency*: Iron, B12, Vitamin D\n• *Stress/Anxiety*: Mental exhaustion\n\n**Recommendations:**\n• Sleep hygiene (7-9hrs)\n• Balanced diet with protein\n• Hydration (2-3L/day)\n• Light exercise (30min/day)\n\n**Red flags:** Sudden onset, weight loss, chest pain, shortness of breath.`;
+                }
+
+                return `Thanks for sharing: *"${message}"*\n\nI understand your concern. For more targeted advice, please provide:\n• Symptom duration\n• Severity (1-10)\n• Associated symptoms\n• Medical history\n\n**Remember:** I'm not a doctor. Always consult healthcare professionals for diagnosis/treatment.`;
+            }
+        }
+
+        // Global functions
+        const chat = new HealthAIChat();
+
+        function sendMessage() {
+            chat.sendMessage();
+        }
+
+        function quickMessage(message) {
+            document.getElementById('messageInput').value = message;
+            chat.sendMessage();
+        }
+
+        function newChat() {
+            document.getElementById('chatArea').innerHTML = `
+                <div class="message ai">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-bubble">
+                        <div class="message-content">
+                            <strong>New chat started! 👋</strong> I'm your AI Health Assistant. 
+                            What health concern can I help you with today?
+                        </div>
+                        <div class="message-time">
+                            <i class="fas fa-clock"></i> ${chat.getCurrentTime()}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('messageInput').focus();
+        }
+
+        function emergencyCall() {
+            if (confirm('🚨 EMERGENCY ALERT\n\nThis is a medical emergency. Are you calling 911 or going to the ER right now?')) {
+                window.open('tel:911', '_self');
+            }
+        }
+    </script>
+</body>
+</html>
